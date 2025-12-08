@@ -20,6 +20,7 @@
 		"test:e2e": "jest --config ./test/jest-e2e.json"
 	},
 	"dependencies": {
+		"@nestjs/axios": "^4.0.1",
 		"@nestjs/common": "^11.0.1",
 		"@nestjs/core": "^11.0.1",
 		"@nestjs/mapped-types": "*",
@@ -28,6 +29,7 @@
 		"@nestjs/websockets": "^11.1.9",
 		"@prisma/client": "6",
 		"@prisma/config": "^7.1.0",
+		"axios": "^1.13.2",
 		"reflect-metadata": "^0.2.2",
 		"rxjs": "^7.8.1",
 		"socket.io": "^4.8.1"

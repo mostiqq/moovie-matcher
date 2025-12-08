@@ -22,9 +22,10 @@ export class RoomsGateway {
 	) {
 		if (typeof data === 'string') {
 			try {
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 				data = JSON.parse(data)
 			} catch (e) {
-				console.error('Could not parse JSON')
+				console.error('Could not parse JSON', e)
 			}
 		}
 		if (!data.name) {
@@ -49,24 +50,20 @@ export class RoomsGateway {
 
 	@SubscribeMessage('joinRoom')
 	async handleJoinRoom(
-		@MessageBody() rawData: unknown,
+		@MessageBody() data: { name: string; roomCode: string },
 		@ConnectedSocket() client: Socket
 	) {
-		console.log('Попытка входа:', rawData)
+		console.log('Попытка входа:', data)
 
-		let data
-		// Тот же парсинг, что и в createRoom
-		if (typeof rawData === 'string') {
+		if (typeof data === 'string') {
 			try {
-				data = JSON.parse(rawData)
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+				data = JSON.parse(data)
 			} catch (e) {
-				return
+				console.error('Could not parse JSON', e)
 			}
-		} else {
-			data = rawData
 		}
 
-		// Нам нужны и код комнаты, и имя
 		if (!data.roomCode || !data.name) {
 			console.error('Нет кода комнаты или имени')
 			return
@@ -93,5 +90,74 @@ export class RoomsGateway {
 			'joinedSuccess',
 			JSON.stringify({ userId: user.id, roomCode: data.roomCode })
 		)
+	}
+
+	@SubscribeMessage('startGame')
+	async handleStartGame(
+		@MessageBody() data: { roomCode: string },
+		@ConnectedSocket() client: Socket
+	) {
+		if (typeof data === 'string') {
+			try {
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+				data = JSON.parse(data)
+			} catch {
+				return
+			}
+		}
+
+		if (!data.roomCode) {
+			console.error('Нет кода комнаты')
+			return
+		}
+
+		try {
+			const movieList = await this.roomsService.startGame(data.roomCode)
+			this.server.to(data.roomCode).emit('gameStarted', {
+				movies: movieList
+			})
+		} catch {
+			client.emit('error', { message: 'Ошибка' })
+		}
+	}
+
+	@SubscribeMessage('likeMovie')
+	async handleLike(
+		@MessageBody()
+		data: { roomCode: string; movieId: number; movieTitle: string },
+		@ConnectedSocket() client: Socket
+	) {
+		if (typeof data === 'string') {
+			try {
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+				data = JSON.parse(data)
+			} catch {
+				return
+			}
+		}
+
+		if (!data.roomCode || !data.movieId || !data.movieTitle) {
+			console.error('Неполные данные для лайка')
+			return
+		}
+
+		try {
+			const isMatch = await this.roomsService.registerLike(
+				data.roomCode,
+				client.id,
+				data.movieId,
+				data.movieTitle
+			)
+
+			if (isMatch) {
+				this.server.to(data.roomCode).emit('matchFound', {
+					movieId: data.movieId,
+					movieTitle: data.movieTitle,
+					message: "It's a match! 💖"
+				})
+			}
+		} catch {
+			console.error('Ошибка при лайке')
+		}
 	}
 }

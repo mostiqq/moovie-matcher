@@ -9,7 +9,9 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@react-spring/web": "^10.0.3",
     "@reduxjs/toolkit": "^2.11.1",
+    "canvas-confetti": "^1.9.4",
     "next": "16.0.8",
     "react": "19.2.1",
     "react-dom": "19.2.1",
@@ -20,6 +22,7 @@
     "socket.io-client": "^4.8.1"
   },
   "devDependencies": {
+    "@types/canvas-confetti": "^1.9.0",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",

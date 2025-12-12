@@ -1,6 +1,6 @@
 'use client'
 
-import { createRoomEmit } from '@/store/sessionSlice'
+import { createRoomEmit } from '@/store/session.slice'
 import { AppDispatch, RootState } from '@/store/store'
 import Image from 'next/image'
 import Link from 'next/link'

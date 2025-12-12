@@ -1,18 +1,23 @@
 'use client'
 
-import { RootState } from '@/store/store'
+import GameBoard from '@/components/game-board/GameBoard'
+import MatchPopup from '@/components/match-popup/MatchPopup'
+import { startGameEmit } from '@/store/game.slice'
+import { AppDispatch, RootState } from '@/store/store'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import styles from './Room.module.scss'
 
 function Room({ code }: { code: string }) {
 	const router = useRouter()
+	const dispatch = useDispatch<AppDispatch>()
 	const [copied, setCopied] = useState(false)
 
 	const { userId, isAdmin } = useSelector((state: RootState) => state.session)
+	const { status, isRoomFull } = useSelector((state: RootState) => state.game)
 
 	useEffect(() => {
 		if (!userId) {
@@ -23,16 +28,18 @@ function Room({ code }: { code: string }) {
 	const copyCode = () => {
 		navigator.clipboard.writeText(code)
 		setCopied(true)
-		// Сбрасываем надпись через 2 секунды
 		setTimeout(() => setCopied(false), 2000)
 	}
 
 	const handleStartGame = () => {
-		console.log('Игра началась!')
-		// Тут будет dispatch(startGameEmit(code))
+		dispatch(startGameEmit(code))
 	}
 
 	if (!userId) return null
+
+	if (status === 'match') return <MatchPopup />
+
+	if (status === 'playing') return <GameBoard />
 
 	return (
 		<div className={styles.main}>
@@ -41,7 +48,6 @@ function Room({ code }: { code: string }) {
 			</Link>
 
 			<div className={styles.backgroundContainer}>
-				{/* Картинка с попкорном для атмосферы ожидания */}
 				<Image
 					src='https://images.unsplash.com/photo-1585647347384-2593bc35786b?q=80&w=2070&auto=format&fit=crop'
 					alt='Lobby Background'
@@ -68,13 +74,21 @@ function Room({ code }: { code: string }) {
 					</span>
 				</div>
 
-				<div className={styles.status}>
-					<div className={styles.loader} />
-					<p className={styles.statusText}>Ожидаем второго игрока...</p>
-				</div>
+				{!isRoomFull && (
+					<div className={styles.status}>
+						<div className={styles.loader} />
+						{isAdmin && (
+							<p className={styles.statusText}>Ожидаем второго игрока...</p>
+						)}
+					</div>
+				)}
 
 				{isAdmin && (
-					<button className={styles.startBtn} onClick={handleStartGame}>
+					<button
+						disabled={!isRoomFull}
+						className={styles.startBtn}
+						onClick={handleStartGame}
+					>
 						Начать мэтчинг
 						<span className={styles.glow} />
 					</button>

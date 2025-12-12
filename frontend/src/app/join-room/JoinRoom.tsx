@@ -1,6 +1,6 @@
 'use client'
 
-import { joinRoomEmit } from '@/store/sessionSlice'
+import { joinRoomEmit } from '@/store/session.slice'
 import { AppDispatch, RootState } from '@/store/store'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -42,7 +42,7 @@ function JoinRoom() {
 
 			<div className={styles.backgroundContainer}>
 				<Image
-					src='https://images.unsplash.com/photo-1517604931442-710c8ef555c9?q=80&w=2069&auto=format&fit=crop'
+					src='https://images.unsplash.com/photo-1574267432553-4b4628081c31?q=80&w=1931&auto=format&fit=crop'
 					alt='Join Room Background'
 					fill
 					className={styles.backgroundImage}

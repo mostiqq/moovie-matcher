@@ -1,0 +1,161 @@
+@keyframes popIn {
+	0% {
+		transform: scale(0.5);
+		opacity: 0;
+	}
+	60% {
+		transform: scale(1.1);
+		opacity: 1;
+	}
+	100% {
+		transform: scale(1);
+		opacity: 1;
+	}
+}
+
+@keyframes glowText {
+	from {
+		text-shadow: 0 0 10px rgba(70, 232, 145, 0.5);
+	}
+	to {
+		text-shadow:
+			0 0 30px rgba(70, 232, 145, 0.9),
+			0 0 60px rgba(70, 232, 145, 0.4);
+	}
+}
+
+@keyframes float {
+	0% {
+		transform: translateY(0px);
+	}
+	50% {
+		transform: translateY(-10px);
+	}
+	100% {
+		transform: translateY(0px);
+	}
+}
+
+@keyframes shimmer {
+	0% {
+		background-position: -200% 0;
+	}
+	100% {
+		background-position: 200% 0;
+	}
+}
+
+.overlay {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100vw;
+	height: 100vh;
+	z-index: 9999;
+	background: rgba(0, 0, 0, 0.92);
+	backdrop-filter: blur(10px);
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	animation: popIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+	padding: 20px;
+}
+
+.title {
+	font-size: 4rem;
+	font-weight: 900;
+	margin: 0 0 10px 0;
+	/* Градиентный текст для вау-эффекта */
+	background: linear-gradient(to right, #46e891, #2ecc71);
+	-webkit-background-clip: text;
+	background-clip: text;
+	color: transparent;
+	text-transform: uppercase;
+	letter-spacing: 4px;
+	animation: glowText 2s infinite alternate;
+	text-align: center;
+	line-height: 1;
+}
+
+.movieName {
+	font-size: 1.5rem;
+	font-weight: 600;
+	color: white;
+	margin: 0 0 30px 0;
+	text-align: center;
+	max-width: 80%;
+	opacity: 0.9;
+}
+
+.posterWrapper {
+	position: relative;
+	width: 100%;
+	max-width: 320px;
+	aspect-ratio: 2 / 3;
+	border-radius: 20px;
+	overflow: hidden;
+	box-shadow: 0 0 50px rgba(70, 232, 145, 0.3);
+	margin-bottom: 40px;
+	border: 4px solid rgba(255, 255, 255, 0.1);
+
+	/* СТИЛИ ДЛЯ ЗАГРУЗКИ (Скелетон) */
+	background: #1a1a1a; /* Цвет фона пока нет картинки */
+	background: linear-gradient(90deg, #1a1a1a 25%, #2a2a2a 50%, #1a1a1a 75%);
+	background-size: 200% 100%;
+	animation: shimmer 1.5s infinite; /* Эффект мерцания */
+}
+
+.poster {
+	object-fit: cover;
+	transition:
+		opacity 0.5s ease-in-out,
+		transform 0.5s;
+	opacity: 0; /* Скрыта по умолчанию */
+
+	&.visible {
+		opacity: 1; /* Показываем плавно */
+	}
+
+	&:hover {
+		transform: scale(1.05);
+	}
+}
+
+.btn {
+	padding: 16px 40px;
+	background: white;
+	color: black;
+	border: none;
+	border-radius: 50px;
+	font-size: 1.2rem;
+	font-weight: 800;
+	cursor: pointer;
+	transition: all 0.3s ease;
+	box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
+	text-transform: uppercase;
+	letter-spacing: 1px;
+
+	&:hover {
+		transform: translateY(-3px);
+		box-shadow: 0 15px 30px rgba(255, 255, 255, 0.2);
+		background: #f0f0f0;
+	}
+
+	&:active {
+		transform: scale(0.95);
+	}
+}
+
+/* Адаптив для мобилок */
+@media (max-width: 768px) {
+	.title {
+		font-size: 3rem;
+	}
+	.movieName {
+		font-size: 1.2rem;
+	}
+	.posterWrapper {
+		max-width: 240px;
+	}
+}

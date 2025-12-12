@@ -113,6 +113,7 @@ export class RoomsGateway {
 
 		try {
 			const movieList = await this.roomsService.startGame(data.roomCode)
+
 			this.server.to(data.roomCode).emit('gameStarted', {
 				movies: movieList
 			})
@@ -124,7 +125,12 @@ export class RoomsGateway {
 	@SubscribeMessage('likeMovie')
 	async handleLike(
 		@MessageBody()
-		data: { roomCode: string; movieId: number; movieTitle: string },
+		data: {
+			roomCode: string
+			movieId: number
+			movieTitle: string
+			moviePoster: string
+		},
 		@ConnectedSocket() client: Socket
 	) {
 		if (typeof data === 'string') {
@@ -136,7 +142,12 @@ export class RoomsGateway {
 			}
 		}
 
-		if (!data.roomCode || !data.movieId || !data.movieTitle) {
+		if (
+			!data.roomCode ||
+			!data.movieId ||
+			!data.movieTitle ||
+			!data.moviePoster
+		) {
 			console.error('Неполные данные для лайка')
 			return
 		}
@@ -153,6 +164,7 @@ export class RoomsGateway {
 				this.server.to(data.roomCode).emit('matchFound', {
 					movieId: data.movieId,
 					movieTitle: data.movieTitle,
+					moviePoster: data.moviePoster,
 					message: "It's a match! 💖"
 				})
 			}

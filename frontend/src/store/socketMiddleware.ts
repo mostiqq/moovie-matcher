@@ -1,11 +1,12 @@
 import { socket } from '@/shared/socket'
 import { Middleware } from '@reduxjs/toolkit'
+import { setMatch, setRoomFull, startGameSuccess } from './game.slice'
 import {
 	joinRoomSuccess,
 	roomCreatedSuccess,
 	setError,
 	setSocketConnected
-} from './sessionSlice'
+} from './session.slice'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const socketMiddleware: Middleware = store => next => (action: any) => {
@@ -31,6 +32,29 @@ export const socketMiddleware: Middleware = store => next => (action: any) => {
 		socket.on('joinedSuccess', data => {
 			const payload = typeof data === 'string' ? JSON.parse(data) : data
 			store.dispatch(joinRoomSuccess(payload))
+		})
+
+		socket.on('playerJoined', () => {
+			store.dispatch(setRoomFull())
+		})
+
+		socket.on('gameStarted', data => {
+			const payload = typeof data === 'string' ? JSON.parse(data) : data
+			console.log('🎉 Комната создана:', payload)
+			store.dispatch(startGameSuccess(payload.movies))
+		})
+
+		socket.on('matchFound', data => {
+			const payload = typeof data === 'string' ? JSON.parse(data) : data
+			console.log('Мэтч!!!', payload)
+			store.dispatch(
+				setMatch({
+					id: payload.movieId,
+					title: payload.movieTitle,
+					poster_path: payload.moviePoster,
+					overview: payload.message
+				})
+			)
 		})
 
 		socket.on('error', data => {

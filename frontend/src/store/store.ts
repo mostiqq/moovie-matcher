@@ -1,11 +1,13 @@
 import { configureStore } from '@reduxjs/toolkit'
-import sessionReducer from './sessionSlice'
+import gameReducer from './game.slice'
+import sessionReducer from './session.slice'
 import { socketMiddleware } from './socketMiddleware'
 
 export const makeStore = () => {
 	return configureStore({
 		reducer: {
-			session: sessionReducer
+			session: sessionReducer,
+			game: gameReducer
 		},
 		middleware: getDefaultMiddleware =>
 			getDefaultMiddleware().concat(socketMiddleware)
